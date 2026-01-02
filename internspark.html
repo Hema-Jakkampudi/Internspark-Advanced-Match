@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PM Internship Recommendation Engine</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h1>🚀 PM Internship Portal</h1>
+    </nav>
+
+    <div class="container">
+        <aside class="profile-section">
+            <h2>Your Profile</h2>
+            <div class="input-group">
+                <label>Skills (e.g. Python, Marketing, Excel)</label>
+                <textarea id="skillInput" placeholder="Enter your skills here..."></textarea>
+            </div>
+            <button onclick="findMatches()" class="btn-primary">Find Best Matches</button>
+        </aside>
+
+        <main class="results-section">
+            <h2>Recommended Internships</h2>
+            <div id="resultsList">
+                <p class="placeholder-text">Enter your skills to see personalized recommendations.</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+<style>
+    :root {
+    --primary: #2563eb;
+    --success: #16a34a;
+    --bg: #f8fafc;
+    --text: #1e293b;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+}
+
+.navbar {
+    background: #1e1b4b;
+    color: white;
+    padding: 1rem 2rem;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.profile-section {
+    flex: 1;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    height: fit-content;
+}
+
+.results-section {
+    flex: 2;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.btn-primary {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 1rem;
+}
+
+.internship-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border-left: 6px solid var(--primary);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.05);
+}
+
+.match-badge {
+    float: right;
+    background: #dcfce7;
+    color: var(--success);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+</style>
+<script>
+    // Mock Database of Internships
+const internships = [
+    { id: 1, title: "Data Analyst", company: "TechCorp", skills: "python, sql, excel", location: "Delhi" },
+    { id: 2, title: "Digital Marketing", company: "GrowthX", skills: "seo, social media, content", location: "Mumbai" },
+    { id: 3, title: "Web Developer", company: "DevStudio", skills: "html, css, javascript", location: "Remote" },
+    { id: 4, title: "Operations Intern", company: "LogiNext", skills: "management, excel, planning", location: "Bangalore" }
+];
+
+function findMatches() {
+    const userInput = document.getElementById('skillInput').value.toLowerCase();
+    const resultsContainer = document.getElementById('resultsList');
+    
+    if (!userInput) {
+        alert("Please enter some skills first!");
+        return;
+    }
+
+    // AI logic: Simple keyword overlap scoring
+    let matches = internships.map(job => {
+        const jobSkills = job.skills.split(', ');
+        let matchCount = 0;
+        
+        jobSkills.forEach(skill => {
+            if (userInput.includes(skill)) matchCount++;
+        });
+
+        const score = Math.round((matchCount / jobSkills.length) * 100);
+        return { ...job, score };
+    });
+
+    // Sort by highest score
+    matches.sort((a, b) => b.score - a.score);
+
+    // Render to UI
+    resultsContainer.innerHTML = matches.map(job => `
+        <div class="internship-card">
+            <span class="match-badge">${job.score}% Match</span>
+            <h3>${job.title}</h3>
+            <p><strong>Company:</strong> ${job.company}</p>
+            <p><strong>Location:</strong> ${job.location}</p>
+            <p><small>Required: ${job.skills}</small></p>
+            <button class="btn-primary" style="width: auto; padding: 8px 20px;">Apply Now</button>
+        </div>
+    `).join('');
+}
+</script>

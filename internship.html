@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Intern Spark - Advanced Match</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar"><h1>🚀 PM Internship Portal</h1></nav>
+
+    <div class="container">
+        <aside class="profile-section">
+            <h2>Student Profile</h2>
+            <input type="text" id="userName" placeholder="Full Name" class="input-field">
+            
+            <select id="userEdu" class="input-field">
+                <option value="">Select Education</option>
+                <option value="12th">12th Pass</option>
+                <option value="Diploma">Diploma</option>
+                <option value="Under Graduate">Under Graduate</option>
+                <option value="Graduate">Graduate</option>
+                <select id="userMode" class="input-field">
+</select>
+
+<input type="text" id="userLang" placeholder="Languages (e.g. Hindi, English)" class="input-field">
+
+<input type="text" id="userGoals" placeholder="Career Goals (e.g. Web Developer)" class="input-field">
+            </select>
+
+            <input type="text" id="userLoc" placeholder="Preferred City (e.g., Delhi)" class="input-field">
+            
+            <textarea id="skillInput" placeholder="Enter Skills (Python, Java, etc.)" class="input-field"></textarea>
+            
+            <button onclick="findMatches()" class="btn-primary">Find Matches</button>
+        </aside>
+
+        <main class="results-section">
+            <h2 id="welcomeText">Available Internships</h2>
+            <div id="resultsList"></div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+<script>
+    const internships = [
+    { id: 1, title: "Data Analyst", company: "TechCorp", skills: "python, sql", loc: "delhi", edu: "Graduate" },
+    { id: 2, title: "Web Developer", company: "DevStudio", skills: "html, css, javascript", loc: "remote", edu: "Diploma" },
+    { id: 3, title: "Marketing Intern", company: "GrowthX", skills: "social media, seo", loc: "mumbai", edu: "Graduate" },
+    { id: 4, title: "IT Support", company: "FixIt", skills: "networking, hardware", loc: "delhi", edu: "12th" }
+];
+
+function findMatches() {
+    const name = document.getElementById('userName').value;
+    const edu = document.getElementById('userEdu').value;
+    const loc = document.getElementById('userLoc').value.toLowerCase();
+    const skills = document.getElementById('skillInput').value.toLowerCase();
+
+    if (!name || !skills) return alert("Please fill in Name and Skills!");
+
+    document.getElementById('welcomeText').innerText = `Recommendations for ${name}`;
+
+    let matches = internships.map(job => {
+        let score = 0;
+
+        // 1. Skill Score (Weight: 60)
+        const jobSkills = job.skills.split(', ');
+        let skillHits = 0;
+        jobSkills.forEach(s => { if(skills.includes(s)) skillHits++; });
+        score += (skillHits / jobSkills.length) * 60;
+
+        // 2. Location Score (Weight: 20)
+        if (loc === job.loc.toLowerCase() || job.loc === "remote") {
+            score += 20;
+        }
+
+        // 3. Education Score (Weight: 20)
+        if (edu === job.edu) {
+            score += 20;
+        }
+
+        return { ...job, finalScore: Math.round(score) };
+    });
+
+    displayResults(matches.sort((a, b) => b.finalScore - a.finalScore));
+}
+
+function displayResults(data) {
+    const container = document.getElementById('resultsList');
+    container.innerHTML = data.map(job => `
+        <div class="internship-card">
+            <span class="match-badge">${job.finalScore}% Match</span>
+            <h3>${job.title}</h3>
+            <p><strong>Company:</strong> ${job.company} | 📍 ${job.loc}</p>
+            <p><strong>Required Education:</strong> ${job.edu}</p>
+            <p><small>Keywords: ${job.skills}</small></p>
+            <button class="btn-primary" style="width:auto">Apply</button>
+        </div>
+    `).join('');
+    const internships = [
+    { id: 1, title: "Backend Developer", company: "TechCorp", skills: "python, sql", loc: "delhi", mode: "Offline", edu: "Graduate", goal: "software engineer" },
+    { id: 2, title: "Web Developer", company: "DevStudio", skills: "html, css", loc: "remote", mode: "Online", edu: "Under Graduate", goal: "web developer" },
+    { id: 3, title: "UI Designer", company: "CreativeCo", skills: "figma, design", loc: "remote", mode: "Online", edu: "Under Graduate", goal: "designer" }
+];
+
+function findMatches() {
+    const inputs = {
+        name: document.getElementById('userName').value,
+        edu: document.getElementById('userEdu').value,
+        loc: document.getElementById('userLoc').value.toLowerCase(),
+        mode: document.getElementById('userMode').value,
+        skills: document.getElementById('skillInput').value.toLowerCase(),
+        goal: document.getElementById('userGoals').value.toLowerCase()
+    };
+
+    let matches = internships.map(job => {
+        let score = 0;
+
+        // 1. Skill & Goal Alignment (Weight: 40)
+        if (inputs.skills.includes(job.skills)) score += 30;
+        if (inputs.goal && job.title.toLowerCase().includes(inputs.goal)) score += 10;
+
+        // 2. Mode Preference (Weight: 20)
+        if (inputs.mode === job.mode) score += 20;
+
+        // 3. Education Match (Weight: 20)
+        if (inputs.edu === job.edu) score += 20;
+
+        // 4. Location Match (Weight: 20)
+        if (inputs.loc === job.loc.toLowerCase() || job.mode === "Online") score += 20;
+
+        return { ...job, finalScore: Math.round(score) };
+    });
+
+    displayResults(matches.sort((a, b) => b.finalScore - a.finalScore));
+}
+}
+</script>
+<style>
+    .input-field {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    display: block;
+    box-sizing: border-box;
+}
+
+#welcomeText {
+    color: #1e1b4b;
+    border-bottom: 2px solid #2563eb;
+    padding-bottom: 10px;
+}
+/* --- Global Styles --- */
+:root {
+    --primary-color: #1e3a8a;    /* Deep Blue */
+    --secondary-color: #2563eb;  /* Brighter Blue */
+    --accent-color: #f59e0b;     /* Amber/Gold */
+    --success-bg: #dcfce7;
+    --success-text: #166534;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --bg-light: #f1f5f9;
+    --white: #ffffff;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* --- Navigation --- */
+.navbar {
+    background: linear-gradient(90deg, #1e3a8a 0%, #1e1b4b 100%);
+    color: var(--white);
+    padding: 1.2rem 2rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.navbar h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+/* --- Layout Container --- */
+.container {
+    display: grid;
+    grid-template-columns: 350px 1fr; /* Sidebar fixed, main content flexible */
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* --- Sidebar / Form Styling --- */
+.profile-section {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.profile-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    border-left: 4px solid var(--accent-color);
+    padding-left: 10px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+textarea.input-field {
+    height: 120px;
+    resize: vertical;
+}
+
+/* --- Buttons --- */
+.btn-primary {
+    width: 100%;
+    background-color: var(--secondary-color);
+    color: var(--white);
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-color);
+}
+
+/* --- Results Section --- */
+.results-section h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+.internship-card {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.internship-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.match-badge {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: var(--success-bg);
+    color: var(--success-text);
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.internship-card h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--primary-color);
+    width: 80%; /* Leave space for badge */
+}
+
+.internship-card p {
+    margin: 0.25rem 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 900px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-section {
+        position: static;
+    }
+}
+.mode-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-right: 5px;
+    text-transform: uppercase;
+}
+
+.online { background: #e0f2fe; color: #0369a1; } /* Blue for Online */
+.offline { background: #fef3c7; color: #92400e; } /* Orange for Offline */
+</style>
